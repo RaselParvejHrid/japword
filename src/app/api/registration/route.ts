@@ -1,9 +1,14 @@
 // src/app/api/registration/route.ts
+import { uploadImageToImgBB } from "@/app/lib/imgbb";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import validator from "validator";
 
+import { cloudFirestore } from "@/app/lib/firebase/firebase-admin";
+import { hashPassword } from "@/app/lib/hash-password/hash-password";
+
 export async function POST(request: NextRequest) {
+  console.log("/api/registration");
   const formData = await request.formData();
 
   const name = formData.get("name") as string;
@@ -31,10 +36,49 @@ export async function POST(request: NextRequest) {
   }
 
   // Upload the Photo in ImageBB; get the link
+  let photoData;
+  try {
+    photoData = await uploadImageToImgBB(photo);
+    console.log(photoData);
+    if (!photoData.success) {
+      throw Error("Cannot save the photo");
+    }
+  } catch (e) {
+    return NextResponse.json(
+      { error: "Cannot save the Photo" },
+      { status: 400 }
+    );
+  }
+
+  let hashedPassword;
+
+  try {
+    hashedPassword = await hashPassword(password);
+  } catch (e) {
+    return NextResponse.json(
+      { error: "Cannot hash the password." },
+      { status: 400 }
+    );
+  }
 
   // Save name, email, password and Photo URL in firebase.
+  try {
+    await cloudFirestore.collection("users").add({
+      name,
+      email,
+      password: hashedPassword,
+      role: "standard",
+      photo: photoData.data,
+    });
+  } catch (e) {
+    console.log("Error: ", e);
+    return NextResponse.json(
+      { error: "Cannot create new user." },
+      { status: 400 }
+    );
+  }
 
-  // For now, simulate a successful registration
+  // User Created
   return NextResponse.json(
     { message: "Registration successful!" },
     { status: 200 }

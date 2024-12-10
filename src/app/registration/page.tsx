@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import validator from "validator";
 import { toast } from "react-toastify";
 
@@ -70,7 +70,7 @@ const Registration = () => {
       if (fileInputRef.current) fileInputRef.current.value = "";
       setError(null);
       setWaiting(false);
-      toast.success("Registration Successful!");
+      toast.success("Registration Successful!", { position: "bottom-right" });
       router.replace("/log-in");
     } catch (err) {
       console.log(err);
