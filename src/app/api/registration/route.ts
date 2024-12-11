@@ -26,26 +26,39 @@ export async function POST(request: NextRequest) {
 
   if (password.length < 6) {
     return NextResponse.json(
-      { error: "Password must be al least 6 characters long." },
+      { message: "Password must be al least 6 characters long." },
       { status: 400 }
     );
   }
 
   if (!photo) {
-    return NextResponse.json({ error: "Upload a Photo." }, { status: 400 });
+    return NextResponse.json({ message: "Upload a Photo." }, { status: 400 });
   }
 
+  // Check if any existing user with this email
+  // is there any user with this email
+  const anyUserAlreadyQuerySnapshot = await cloudFirestore
+    .collection("users")
+    .where("email", "==", email)
+    .get();
+
+  if (!anyUserAlreadyQuerySnapshot.empty) {
+    return NextResponse.json(
+      { message: "The email is associate with Another Account." },
+      { status: 400 }
+    );
+  }
   // Upload the Photo in ImageBB; get the link
-  let photoData;
+  let imgBBResponse;
   try {
-    photoData = await uploadImageToImgBB(photo);
-    console.log(photoData);
-    if (!photoData.success) {
+    imgBBResponse = await uploadImageToImgBB(photo);
+    console.log(imgBBResponse);
+    if (!imgBBResponse.success) {
       throw Error("Cannot save the photo");
     }
   } catch (e) {
     return NextResponse.json(
-      { error: "Cannot save the Photo" },
+      { message: "Cannot save the Photo" },
       { status: 400 }
     );
   }
@@ -56,7 +69,7 @@ export async function POST(request: NextRequest) {
     hashedPassword = await hashPassword(password);
   } catch (e) {
     return NextResponse.json(
-      { error: "Cannot hash the password." },
+      { message: "Cannot hash the password." },
       { status: 400 }
     );
   }
@@ -68,12 +81,12 @@ export async function POST(request: NextRequest) {
       email,
       password: hashedPassword,
       role: "standard",
-      photo: photoData.data,
+      photo: imgBBResponse.data,
     });
   } catch (e) {
     console.log("Error: ", e);
     return NextResponse.json(
-      { error: "Cannot create new user." },
+      { message: "Cannot create new user." },
       { status: 400 }
     );
   }

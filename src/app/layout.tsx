@@ -56,7 +56,7 @@ export default function RootLayout({
 
                 {!isUserLoggedIn ? (
                   <>
-                    <Link href="/log-in" className="text-white">
+                    <Link href="/login" className="text-white">
                       Log In
                     </Link>
                     <Link href="/registration" className="text-white">
