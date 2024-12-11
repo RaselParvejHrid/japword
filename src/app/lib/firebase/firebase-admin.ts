@@ -1,8 +1,10 @@
 import admin from "firebase-admin";
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY || "{}");
-
+// Check if Firebase Admin has already been initialized
 if (!admin.apps.length) {
+  const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY ?? "");
+
+  // Initialize Firebase Admin only once
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });

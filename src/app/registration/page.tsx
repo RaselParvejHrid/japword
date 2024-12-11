@@ -59,7 +59,8 @@ const Registration = () => {
       });
 
       if (!res.ok) {
-        setError("Registration Failed.");
+        const error = await res.json();
+        setError(error.message);
         setWaiting(false);
         return;
       }
@@ -153,7 +154,7 @@ const Registration = () => {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-500"
         >
-          Register
+          {waiting ? "Waiting..." : "Register"}
         </button>
       </form>
     </div>

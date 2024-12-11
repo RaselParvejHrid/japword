@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import validator from "validator";
 
 const LoginPage = () => {
+  const myRouter = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -18,8 +21,20 @@ const LoginPage = () => {
     formData.append("email", email);
     formData.append("password", password);
 
+    if (!validator.isEmail(email.trim())) {
+      setError("Email Format is invalid.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be al least 6 characters long.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch(new URL("/api/login", window.location.origin), {
         method: "POST",
         body: formData,
       });
@@ -28,8 +43,8 @@ const LoginPage = () => {
         const data = await res.json();
         setError(data.message || "Login failed");
       } else {
-        // Redirect or perform actions upon successful login
-        window.location.href = "/dashboard"; // Redirect to dashboard or wherever
+        myRouter.replace("/");
+        console.log("hhhHere");
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -39,7 +54,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex justify-center items-center h-[75vh] bg-gray-100">
       <div className="bg-white p-6 rounded shadow-md w-96">
         <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
         <form onSubmit={handleSubmit}>

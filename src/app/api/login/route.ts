@@ -5,13 +5,17 @@ import { verifyPassword } from "@/app/lib/hash-password/hash-password";
 import { createToken } from "@/app/lib/jwt/jwt";
 
 export async function POST(request: NextRequest) {
+  console.log("Login Request.");
   const formData = await request.formData();
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   if (!validator.isEmail(email.trim())) {
-    return NextResponse.json({ message: "Email is Invalid." }, { status: 400 });
+    return NextResponse.json(
+      { message: "Email Format is Invalid." },
+      { status: 400 }
+    );
   }
 
   if (password.length < 6) {
@@ -48,7 +52,9 @@ export async function POST(request: NextRequest) {
   const payload = {
     name: userInDB.get("name"),
     email: userInDB.get("email"),
+    role: userInDB.get("role"),
     password: userInDB.get("password"),
+    timestamp: new Date().valueOf(),
   };
   const token = createToken(payload);
 
