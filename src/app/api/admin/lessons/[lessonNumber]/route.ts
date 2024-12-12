@@ -84,6 +84,17 @@ export async function DELETE(
       );
     }
 
+    const words = (
+      await cloudFirestore
+        .collection("words")
+        .where("lessonNumber", "==", lessonNumber)
+        .get()
+    ).docs;
+    await Promise.all(
+      words.map(async (word) => {
+        return word.ref.delete();
+      })
+    );
     await lesson[0].ref.delete();
     return NextResponse.json(
       { message: "Lesson Successfully Deleted." },

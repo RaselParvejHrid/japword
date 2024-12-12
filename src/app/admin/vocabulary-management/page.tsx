@@ -446,7 +446,7 @@ export default function WordsManagementPage() {
 
       {isUpdateModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="modal bg-white rounded-lg shadow-lg p-6 p-6 w-11/12 md:w-1/2">
+          <div className="modal bg-white rounded-lg shadow-lg p-6 w-11/12 md:w-1/2">
             <h2 className="text-lg font-bold mb-4">Update Word</h2>
             <form
               onSubmit={(e: React.FormEvent) => {
