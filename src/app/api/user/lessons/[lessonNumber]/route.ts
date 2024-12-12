@@ -34,8 +34,6 @@ export async function GET(
 
     lesson.words = words;
 
-    // console.log("Lesson in Route", lesson);
-
     return NextResponse.json({ lesson: { ...lesson, words } }, { status: 200 });
   } catch (error) {
     console.error("Error fetching lesson in Route Handler:", error);
