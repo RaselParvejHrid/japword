@@ -20,9 +20,40 @@ export async function GET(
 
     return NextResponse.json({ word }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching user in Route Handler:", error);
+    console.error("Error fetching word in Route Handler:", error);
     return NextResponse.json(
-      { message: "Failed to fetch user." },
+      { message: "Failed to fetch word." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { wordID: string } }
+) {
+  const wordID = params.wordID;
+
+  try {
+    let word = await cloudFirestore.doc(`words/${wordID}`).get();
+
+    if (!word.exists) {
+      return NextResponse.json(
+        { message: "No Word with this ID exists." },
+        { status: 400 }
+      );
+    }
+
+    await word.ref.delete();
+
+    return NextResponse.json(
+      { message: "Word Successfully deleted." },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting word in Route Handler:", error);
+    return NextResponse.json(
+      { message: "Failed to delete word." },
       { status: 500 }
     );
   }
