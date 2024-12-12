@@ -175,7 +175,7 @@ export default function LessonsPage() {
                 <input
                   type="text"
                   id="name"
-                  value={currentLesson?.name || ""}
+                  value={currentLesson?.name ?? ""}
                   onChange={(e) => {
                     if (currentLesson) {
                       setCurrentLesson({
@@ -197,7 +197,7 @@ export default function LessonsPage() {
                 <input
                   type="number"
                   id="number"
-                  value={currentLesson?.number || 0}
+                  value={currentLesson?.number ?? 0}
                   onChange={(e) => {
                     if (currentLesson) {
                       setCurrentLesson({
