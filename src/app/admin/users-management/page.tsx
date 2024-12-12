@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
@@ -10,7 +11,7 @@ interface User {
   photo: Object;
 }
 
-function UsersManagementPage() {
+export default function UsersManagementPage() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -22,7 +23,7 @@ function UsersManagementPage() {
     try {
       const response = await fetch("/api/admin/users");
       const data = await response.json();
-      setUsers(data);
+      setUsers(data.users);
     } catch (error) {
       console.error("Error fetching users:", error);
       setIsError(true);
