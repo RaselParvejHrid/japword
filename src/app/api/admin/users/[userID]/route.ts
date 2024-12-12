@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as yup from "yup";
 import { cloudFirestore } from "@/app/lib/firebase/firebase-admin";
 
 export async function GET(
@@ -62,7 +63,13 @@ export async function PATCH(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error updating lesson in Route Handler:", error);
+    if (error instanceof yup.ValidationError) {
+      return NextResponse.json(
+        { message: error.errors.join("\n") },
+        { status: 400 }
+      );
+    }
+    console.error("Error updating user role in Route Handler:", error);
     return NextResponse.json(
       { message: "Failed to update User Role." },
       { status: 500 }
