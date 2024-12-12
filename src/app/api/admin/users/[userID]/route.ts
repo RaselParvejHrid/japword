@@ -27,65 +27,44 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { tutorialID: string } }
-) {
-  const tutorialID = params.tutorialID;
-
-  try {
-    let tutorial = await cloudFirestore.doc(`tutorials/${tutorialID}`).get();
-
-    if (!tutorial.exists) {
-      return NextResponse.json(
-        { message: "No Tutorial with this ID exists." },
-        { status: 400 }
-      );
-    }
-
-    await tutorial.ref.delete();
-    return NextResponse.json(
-      { message: "Tutorial Successfully Deleted." },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Error deleting tutorial in Route Handler:", error);
-    return NextResponse.json(
-      { message: "Failed to delete tutorial." },
-      { status: 500 }
-    );
-  }
+interface UpdateUser {
+  role: string;
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { tutorialID: string } }
+  { params }: { params: { userID: string } }
 ) {
-  const tutorialID = params.tutorialID;
+  const userID = params.userID;
 
-  const updatedTutorial = await req.json();
-
-  // Any other lesson with target Lesson Number?
+  const updateUser = (await req.json()) as UpdateUser;
 
   try {
-    let tutorial = await cloudFirestore.doc(`tutorials/${tutorialID}`).get();
+    let user = await cloudFirestore.doc(`users/${userID}`).get();
 
-    if (!tutorial.exists) {
+    if (!user.exists) {
       return NextResponse.json(
-        { message: "No Tutorial with this ID exists." },
+        { message: "No User with this ID exists." },
         { status: 400 }
       );
     }
 
-    await tutorial.ref.update(updatedTutorial);
+    if (user.get("role") === updateUser.role) {
+      return NextResponse.json(
+        { message: "Already in Desired Role." },
+        { status: 400 }
+      );
+    }
+
+    await user.ref.update({ role: updateUser.role });
     return NextResponse.json(
-      { message: "Lesson Successfully Updated." },
+      { message: "User Role Successfully Updated." },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error updating lesson in Route Handler:", error);
     return NextResponse.json(
-      { message: "Failed to update lesson." },
+      { message: "Failed to update User Role." },
       { status: 500 }
     );
   }
