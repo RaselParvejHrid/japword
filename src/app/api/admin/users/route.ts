@@ -3,6 +3,8 @@ import * as yup from "yup";
 import { cloudFirestore } from "@/app/lib/firebase/firebase-admin";
 
 export async function GET(req: NextRequest) {
+  const ownEmail = req.headers.get("X-User-Email");
+  console.log("Own Email", ownEmail);
   try {
     let users = (await cloudFirestore.collection("users").get()).docs.map(
       (doc) => ({ id: doc.id, ...doc.data() })
