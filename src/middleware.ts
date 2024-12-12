@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isUserLoggedIn && userRole === "standard" && currentPath === "/") {
-    return NextResponse.redirect(`${baseURL}/lessons`);
+    return NextResponse.redirect(`${baseURL}/user/lessons`);
   }
 
   if (currentPath.includes("/api/admin") && userRole !== "admin") {

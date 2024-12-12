@@ -44,7 +44,6 @@ const LoginPage = () => {
         setError(data.message || "Login failed");
       } else {
         myRouter.replace("/");
-        console.log("hhhHere");
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");

@@ -46,10 +46,10 @@ export default function RootLayout({
 
                 {isUserLoggedIn && userRole === "standard" ? (
                   <>
-                    <Link href="/lessons" className="text-white">
+                    <Link href="/user/lessons" className="text-white">
                       Lessons
                     </Link>
-                    <Link href="/tutorials" className="text-white">
+                    <Link href="/user/tutorials" className="text-white">
                       Tutorials
                     </Link>
                   </>
