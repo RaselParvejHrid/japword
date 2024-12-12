@@ -46,6 +46,7 @@ const newWordSchema = yup.object().shape({
 });
 
 export async function POST(req: NextRequest) {
+  const adminEmail = req.headers.get("X-User-Email");
   try {
     let newWord = (await req.json()) as NewWord;
 
@@ -66,7 +67,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await cloudFirestore.collection("tutorials").add(newWord);
+    await cloudFirestore
+      .collection("tutorials")
+      .add({ ...newWord, adminEmail });
 
     return NextResponse.json(
       { message: "Successfully added the word." },
