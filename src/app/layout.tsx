@@ -69,7 +69,7 @@ export default function RootLayout({
           </nav>
         </header>
 
-        <main className="max-w-7xl mx-auto p-4">{children}</main>
+        <main className="max-w-7xl mx-auto p-4 min-h-[75vh]">{children}</main>
 
         {/* Admin Interface Should not have a footer */}
         {!isUserLoggedIn || userRole !== "admin" ? (

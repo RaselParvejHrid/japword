@@ -32,7 +32,6 @@ export async function middleware(request: NextRequest) {
   let user = null;
   if (verifyResponse.ok) {
     const responseBody = await verifyResponse.json();
-    console.log("Response Body:", responseBody);
     isUserLoggedIn = true;
     user = responseBody.user;
   }
@@ -45,7 +44,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const userRole = user ? user.role : "guest";
-  console.log("User Role (49)", userRole);
+  const userEmail = user ? user.email : "";
 
   if (isUserLoggedIn && userRole === "admin" && currentPath === "/") {
     return NextResponse.redirect(`${baseURL}/admin/dashboard`);
@@ -55,11 +54,26 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(`${baseURL}/lessons`);
   }
 
+  if (currentPath.includes("/api/admin") && userRole !== "admin") {
+    return NextResponse.json(
+      { message: "Unauthorized Request." },
+      { status: 401 }
+    );
+  }
+
+  if (currentPath.includes("/api/user") && userRole !== "standard") {
+    return NextResponse.json(
+      { message: "Unauthorized Request." },
+      { status: 401 }
+    );
+  }
+
   responseOfNextHandler.headers.set(
     "X-User-Logged-In",
     isUserLoggedIn.toString()
   );
   responseOfNextHandler.headers.set("X-User-Role", userRole);
+  responseOfNextHandler.headers.set("X-User-Email", userEmail);
 
   return responseOfNextHandler;
 }
