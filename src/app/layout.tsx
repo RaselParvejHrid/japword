@@ -66,7 +66,7 @@ export default function RootLayout({
                   </>
                 ) : null}
 
-                {isUserLoggedIn ? <LogOutButton /> : null}
+                <LogOutButton />
               </div>
             </div>
           </nav>
