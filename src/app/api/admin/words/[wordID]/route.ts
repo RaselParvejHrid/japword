@@ -97,7 +97,7 @@ export async function PATCH(
 
   try {
     await wordUpdateSchema.validate(wordUpdate, { abortEarly: false });
-    let word = await cloudFirestore.doc(`users/${wordID}`).get();
+    let word = await cloudFirestore.doc(`words/${wordID}`).get();
 
     if (!word.exists) {
       return NextResponse.json(

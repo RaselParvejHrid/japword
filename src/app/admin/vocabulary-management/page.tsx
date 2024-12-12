@@ -117,7 +117,8 @@ export default function WordsManagementPage() {
     setIsAddModalOpen(true);
   };
 
-  const handleUpdateWord = async (word: Word) => {
+  const openUpdateModal = (word: Word) => {
+    console.log("While opening dialog", word);
     setCurrentWord(word);
     setIsUpdateModalOpen(true);
   };
@@ -134,8 +135,11 @@ export default function WordsManagementPage() {
         const responseBody = await response.json();
         toast.error(responseBody.message, { position: "bottom-right" });
         setIsError(true);
+        fetchWords();
+        fetchLessons();
+      } else {
+        toast.success("Word Deleted.", { position: "bottom-right" });
       }
-      toast.success("Word Deleted.", { position: "bottom-right" });
     } catch (error) {
       console.error("Error deleting word:", error);
       toast.error("Error deleting word.", { position: "bottom-right" });
@@ -191,8 +195,57 @@ export default function WordsManagementPage() {
     setIsLoading(false);
   };
 
+  const handleUpdateWord = async () => {
+    if (!currentWord) {
+      return;
+    }
+    setIsLoading(true);
+    setIsError(false);
+    try {
+      await newWordSchema.validate(currentWord, { abortEarly: false });
+
+      const response = await fetch(`/api/admin/words/${currentWord.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(currentWord),
+      });
+
+      if (response.ok) {
+        toast.success("Added Updated Successfully.", {
+          position: "bottom-right",
+        });
+        setIsUpdateModalOpen(false);
+        setCurrentWord(null);
+
+        fetchWords();
+        fetchLessons();
+      } else {
+        console.error("Error updating word:", response.statusText);
+        setIsError(true);
+        const responseBody = await response.json();
+        toast.error(responseBody.message, { position: "bottom-right" });
+      }
+    } catch (error) {
+      setIsError(true);
+      if (error instanceof yup.ValidationError) {
+        console.error("Validation errors:", error.errors);
+        toast.error(error.errors.join("\n"), { position: "bottom-right" });
+      } else {
+        console.error("Error updating word:", error);
+        toast.error("Error updating word.", { position: "bottom-right" });
+      }
+    }
+    setIsLoading(false);
+  };
+
   const closeAddModal = () => {
     setIsAddModalOpen(false);
+  };
+
+  const closeUpdateModal = () => {
+    setIsUpdateModalOpen(false);
   };
 
   console.log("Words", words);
@@ -256,7 +309,7 @@ export default function WordsManagementPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     <button
                       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                      onClick={() => handleUpdateWord(word)}
+                      onClick={() => openUpdateModal({ ...word })}
                     >
                       Edit
                     </button>
@@ -393,13 +446,13 @@ export default function WordsManagementPage() {
 
       {isUpdateModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="modal bg-white rounded-lg shadow-lg p-6">
+          <div className="modal bg-white rounded-lg shadow-lg p-6 p-6 w-11/12 md:w-1/2">
             <h2 className="text-lg font-bold mb-4">Update Word</h2>
             <form
               onSubmit={(e: React.FormEvent) => {
                 e.preventDefault();
                 if (currentWord) {
-                  handleUpdateWord(currentWord);
+                  handleUpdateWord();
                 }
               }}
             >
@@ -417,7 +470,10 @@ export default function WordsManagementPage() {
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-teal-500 focus:border-transparent"
                   value={currentWord?.word ?? ""} // Pre-fill with currentWord.word if available
                   onChange={(e) =>
-                    setNewWord({ ...currentWord, word: e.target.value } as Word)
+                    setCurrentWord({
+                      ...currentWord,
+                      word: e.target.value,
+                    } as Word)
                   }
                 />
               </div>
@@ -434,12 +490,13 @@ export default function WordsManagementPage() {
                   name="meaning"
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-teal-500 focus:border-transparent"
                   value={currentWord?.meaning ?? ""} // Pre-fill with currentWord.meaning if available
-                  onChange={(e) =>
-                    setNewWord({
+                  onChange={(e) => {
+                    console.log("Meaning:", e.target.value);
+                    setCurrentWord({
                       ...currentWord,
                       meaning: e.target.value,
-                    } as Word)
-                  }
+                    } as Word);
+                  }}
                 />
               </div>
               <div className="mb-4">
@@ -456,7 +513,7 @@ export default function WordsManagementPage() {
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-teal-500 focus:border-transparent"
                   value={currentWord?.pronunciation ?? ""} // Pre-fill with currentWord.pronunciation if available
                   onChange={(e) =>
-                    setNewWord({
+                    setCurrentWord({
                       ...currentWord,
                       pronunciation: e.target.value,
                     } as Word)
@@ -477,15 +534,18 @@ export default function WordsManagementPage() {
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-teal-500 focus:border-transparent"
                   value={currentWord?.whenToSay ?? ""} // Pre-fill with currentWord.whenToSay if available
                   onChange={(e) =>
-                    setNewWord({
+                    setCurrentWord({
                       ...currentWord,
                       whenToSay: e.target.value,
                     } as Word)
                   }
                 />
               </div>
+              <label className="text-gray-700 font-bold mb-2">
+                Lesson Number:{" "}
+              </label>
               <select
-                value={currentWord?.lessonNumber ?? 0}
+                value={currentWord?.lessonNumber ?? 1}
                 onChange={(e) =>
                   setCurrentWord({
                     ...currentWord,
@@ -495,18 +555,27 @@ export default function WordsManagementPage() {
               >
                 {lessons.map(
                   (lesson: { id: string; name: string; number: number }) => (
-                    <option key={lesson.id} value={lesson.number}>
+                    <option key={lesson.number} value={lesson.number}>
                       Lesson {lesson.number}: {lesson.name}
                     </option>
                   )
                 )}
               </select>
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-teal-500"
-              >
-                Update Word
-              </button>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded mr-2"
+                  onClick={closeUpdateModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Update
+                </button>
+              </div>
             </form>
           </div>
         </div>

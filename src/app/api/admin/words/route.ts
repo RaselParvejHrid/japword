@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
           .get()
       ).docs.length !== 0;
 
-    if (anyLessonWithThisLessonNumber) {
+    if (!anyLessonWithThisLessonNumber) {
       return NextResponse.json(
         { message: "No Lesson with this lesson number exists." },
         { status: 400 }
