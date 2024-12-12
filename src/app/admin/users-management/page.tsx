@@ -64,7 +64,8 @@ function UsersManagementPage() {
   };
 
   const handleDemoteUser = async (userId: string) => {
-    // ... (similar to your previous implementation)
+    setIsLoading(true);
+    setIsError(false);
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
@@ -75,12 +76,18 @@ function UsersManagementPage() {
       });
 
       if (response.ok) {
-        // Handle success, e.g., update the user's role in the local state
+        toast.success("Demoted to Standard.", { position: "bottom-right" });
+        setIsLoading(false);
       } else {
-        // Handle error, e.g., display an error message to the user
+        const responseBody = await response.json();
+        toast.error(responseBody.message, { position: "bottom-right" });
+        setIsLoading(false);
+        setIsError(true);
       }
     } catch (error) {
-      // Handle error, e.g., display an error message to the user
+      toast.error("Failed to Demote User", { position: "bottom-right" });
+      setIsLoading(false);
+      setIsError(true);
     }
   };
 
