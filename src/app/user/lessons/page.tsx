@@ -57,6 +57,7 @@ export default function LessonsPage() {
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                   Word Count
                 </th>
+
                 <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-900 uppercase tracking-wider">
                   Actions
                 </th>
