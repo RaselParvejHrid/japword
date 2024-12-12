@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
+import LogOutButton from "./LogOutButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -64,6 +65,8 @@ export default function RootLayout({
                     </Link>
                   </>
                 ) : null}
+
+                {isUserLoggedIn ? <LogOutButton /> : null}
               </div>
             </div>
           </nav>
