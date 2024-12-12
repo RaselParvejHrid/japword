@@ -50,6 +50,7 @@ export default function UsersManagementPage() {
 
       if (response.ok) {
         toast.success("Promoted to Admin.", { position: "bottom-right" });
+        fetchUsers();
         setIsLoading(false);
       } else {
         const responseBody = await response.json();
@@ -78,6 +79,7 @@ export default function UsersManagementPage() {
 
       if (response.ok) {
         toast.success("Demoted to Standard.", { position: "bottom-right" });
+        fetchUsers();
         setIsLoading(false);
       } else {
         const responseBody = await response.json();
