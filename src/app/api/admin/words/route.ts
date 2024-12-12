@@ -53,17 +53,17 @@ export async function POST(req: NextRequest) {
 
     await newWordSchema.validate(newWord, { abortEarly: false });
 
-    const anyEntryWithThisWord =
+    const anyLessonWithThisLessonNumber =
       (
         await cloudFirestore
-          .collection("words")
-          .where("word", "==", newWord.word)
+          .collection("lessons")
+          .where("number", "==", newWord.lessonNumber)
           .get()
       ).docs.length !== 0;
 
-    if (anyEntryWithThisWord) {
+    if (anyLessonWithThisLessonNumber) {
       return NextResponse.json(
-        { message: "This word already exists." },
+        { message: "No Lesson with this lesson number exists." },
         { status: 400 }
       );
     }
