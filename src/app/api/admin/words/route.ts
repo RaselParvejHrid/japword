@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
     let words = (await cloudFirestore.collection("words").get()).docs.map(
       (doc) => ({ id: doc.id, ...doc.data() })
     );
+    console.log("Words in Route", words);
     return NextResponse.json({ words }, { status: 200 });
   } catch (error) {
     console.error("Error fetching words in Route Handler:", error);
@@ -67,9 +68,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await cloudFirestore
-      .collection("tutorials")
-      .add({ ...newWord, adminEmail });
+    await cloudFirestore.collection("words").add({ ...newWord, adminEmail });
 
     return NextResponse.json(
       { message: "Successfully added the word." },
