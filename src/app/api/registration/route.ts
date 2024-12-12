@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   try {
     await cloudFirestore.collection("users").add({
       name,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
       role: "standard",
       photo: imgBBResponse.data,

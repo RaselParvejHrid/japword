@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
   // is there any user with this email
   const anyUserAlreadyQuerySnapshot = await cloudFirestore
     .collection("users")
-    .where("email", "==", email)
+    .where("email", "==", email.toLowerCase())
     .get();
 
   if (anyUserAlreadyQuerySnapshot.empty) {
