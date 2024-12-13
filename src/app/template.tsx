@@ -1,4 +1,6 @@
-import { headers } from "next/headers";
+"use client";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 import LogOutButton from "./LogOutButton";
@@ -8,9 +10,20 @@ export default function RootTemplate({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isUserLoggedIn = headers().get("X-User-Logged-In") === "true";
-  const userRole = headers().get("X-User-Role");
+  const pathname = usePathname();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
+  const [userRole, setUserRole] = useState<string>("guest");
 
+  useEffect(() => {
+    console.log("Pathname:", pathname);
+    setIsUserLoggedIn(localStorage.getItem("isUserLoggedIn") === "true");
+  }, [pathname]);
+
+  useEffect(() => {
+    setUserRole(localStorage.getItem("userRole") ?? "guest");
+  }, [isUserLoggedIn]);
+
+  console.log(isUserLoggedIn, userRole);
   return (
     <>
       <header>

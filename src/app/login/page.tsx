@@ -43,6 +43,9 @@ const LoginPage = () => {
         const data = await res.json();
         setError(data.message || "Login failed");
       } else {
+        const data = await res.json();
+        localStorage.setItem("isUserLoggedIn", "true");
+        localStorage.setItem("userRole", data.role);
         myRouter.replace("/");
       }
     } catch (error) {

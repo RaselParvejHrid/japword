@@ -59,7 +59,10 @@ export async function POST(request: NextRequest) {
   const token = createToken(payload);
 
   // Set token as HttpOnly cookie
-  const response = NextResponse.json({ message: "Login successful" });
+  const response = NextResponse.json({
+    message: "Login successful",
+    role: payload.role,
+  });
 
   // Add HttpOnly cookie to the response
   response.cookies.set("token", token, {

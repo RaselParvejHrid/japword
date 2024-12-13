@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const LogOutButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +16,8 @@ const LogOutButton: React.FC = () => {
       setIsLoading(false);
 
       if (response.ok) {
+        localStorage.setItem("isUserLoggedIn", "false");
+        localStorage.setItem("userRole", "guest");
         router.replace("/login"); // Redirect to login page
       } else {
         console.error("Failed to log out");
