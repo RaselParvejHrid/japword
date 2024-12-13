@@ -54,6 +54,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(`${baseURL}/user/lessons`);
   }
 
+  if (
+    isUserLoggedIn &&
+    ["/login", "/registration"].indexOf(currentPath) !== -1
+  ) {
+    return NextResponse.redirect(`${baseURL}`);
+  }
+
   if (currentPath.includes("/api/admin") && userRole !== "admin") {
     return NextResponse.json(
       { message: "Unauthorized Request." },

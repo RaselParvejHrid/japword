@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 
 const LogOutButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -27,7 +26,7 @@ const LogOutButton: React.FC = () => {
     }
   };
 
-  return ["/login", "/registration"].includes(pathname) ? null : (
+  return (
     <button
       onClick={handleLogout}
       disabled={isLoading}
